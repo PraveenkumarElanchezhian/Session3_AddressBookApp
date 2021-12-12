@@ -42,7 +42,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
       setTextValue('.address-error', "");
     });
 
-   
+    checkForUpdate();
 });
 
     const checkName = (name) => {
@@ -74,3 +74,106 @@ window.addEventListener('DOMContentLoaded', (event) => {
       }
 
 
+
+      const save = (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        try {
+          setAddressBookObject();
+          createAndUpdateStorage();
+          resetForm();
+          window.location.replace(site_properties.home_page);
+        }
+        catch (e) {
+          alert(e);
+        }
+      };
+
+
+      const setAddressBookObject = () => {
+        if(!isUpdate && site_properties.use_local_storage.match("true")){
+          addressBookDataObject.id = createNewAddressBookIdId();
+        }
+        addressBookDataObject._firstname = getInputValueById('#name');
+        addressBookDataObject._phonenumber = getInputValueById("#phonenumber");
+        addressBookDataObject._address = getInputValueById("#address");
+        addressBookDataObject._state = getSelectedValues('[name=State]');
+        addressBookDataObject._city = getSelectedValues('[name=City]');
+        addressBookDataObject._zipcode = getInputValueById('#ZipCode');
+      };
+
+      const createAndUpdateStorage = () => {
+        let addressBookList = JSON.parse(localStorage.getItem("AddressBookList"));
+        if (addressBookList) {
+      
+          let addressBookData = addressBookList.find(i => i.id == addressBookDataObject.id);
+          if(!addressBookData) 
+          addressBookList.push(addressBookDataObject);
+          else{
+            const index = addressBookList.map(i => i.id).indexOf(addressBookData.id);
+            addressBookList.splice(index, 1, addressBookDataObject);
+          }
+        }
+         else {
+          addressBookList = [addressBookDataObject];
+        }
+        localStorage.setItem("AddressBookList", JSON.stringify(addressBookList));
+      };
+
+      const createNewAddressBookIdId = () => {
+        let addressBookId = localStorage.getItem('AddressBookId');
+        addressBookId = !addressBookId ? 1: (parseInt(addressBookId)+1).toString();
+        localStorage.setItem('AddressBookId', addressBookId);
+        return addressBookId;
+      }
+
+     
+
+      const unsetSelectedValues = (propertyValue) => {
+        let allItems = document.querySelectorAll(propertyValue);
+        allItems.forEach(item => {
+          item.selectedIndex = 0;
+        });
+      };
+
+      const getInputValueById = (id) => {
+        let value = document.querySelector(id).value;
+        return value;
+      };
+
+      const getSelectedValues = (propertyValue) => {
+        let allItems = document.querySelectorAll(propertyValue);
+        let selItems = [];
+        allItems.forEach((item) => {
+          selItems.push(item.options[item.selectedIndex].text);
+        });
+        return selItems;
+      };
+
+      const setForm = () => {
+        setValue('#name', addressBookDataObject._firstname);
+        setValue('#phonenumber', addressBookDataObject._phonenumber);
+        setValue('#address', addressBookDataObject._address);
+        setSelectedValues('[name=State]', addressBookDataObject._state);
+        setSelectedValues('[name=City]', addressBookDataObject._city);
+        setValue('#ZipCode', addressBookDataObject._zipcode);
+      };
+
+      const checkForUpdate = () => {
+        const employeePayrollDataJson = localStorage.getItem('editEmp');
+        isUpdate = employeePayrollDataJson ? true : false;
+        if (!isUpdate)
+          return;
+          addressBookDataObject = JSON.parse(employeePayrollDataJson);
+        setForm();
+      };
+
+      const setSelectedValues = (propertyValue, value) => {
+        let allItems = document.querySelectorAll(propertyValue);
+        allItems.forEach((item) => {
+          item.options[item.selectedIndex].text=value;
+        });
+      };
+      
+      
+      
