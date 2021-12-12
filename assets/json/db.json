@@ -1,0 +1,20 @@
+{
+    "employee": [
+      {
+        "fullname": "Mohit",
+        "phonenumber": 9500657234,
+        "address": "C-1/10, AnnaNagar",
+        "city":"salem",
+        "state":"TamilNadu",
+        "zipcode":654789
+      },
+      {
+        "fullname": "kumar",
+        "phonenumber": 9577864357,
+        "address": "14/123, T-Nagar",
+        "city":"Covai",
+        "state":"Kerala",
+        "zipcode":544356
+      }
+    ]
+}
